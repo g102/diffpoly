@@ -43,6 +43,7 @@ if ~isvector(x) || ~isvector(y)
 end
 if length(x) ~= length(y)
 	error('x and y must have the same number of elements');
+end
 if ~mod(w, 2)
 	error('Stencil width must be odd');
 end
