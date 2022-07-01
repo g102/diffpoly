@@ -11,7 +11,7 @@ function dy = diffpoly(x, y, w, p)
 %   Inputs:
 %     x: points where the function y(x) has been computed
 %     y: values of the function y(x) in the points specified in 'x'
-%     w: width of the stencil used to compute the polynomial (must be odd)
+%     w: width of the stencil (must be odd)
 %     p: degree of the interpolating polynomial
 %   All the input values are mandatory, none are optional
 %
@@ -19,8 +19,9 @@ function dy = diffpoly(x, y, w, p)
 %     dy: estimated derivative y'(x) computed in the points in 'x'
 %   
 %   Limitations:
-%     the stencil is assumed to be symmetric around each point
+%     the stencil is assumed to be symmetric (from -w to +w)
 %     x and y must be vectors, with x increasing
+%     x and y must have the same number of elements
 %     y has no NaNs
 %
 %  Written by:
@@ -30,29 +31,25 @@ function dy = diffpoly(x, y, w, p)
 %   for x0 in x:
 %       define a neighbourhood of x0 of radius hw
 %       if the distance of x0 from the boundary is less than hw:
-%           make the neighb. not centered around x0 but keep width = w
+%           make the neighb. not centered around x0 but keep total width
 %       compute the best fitting polynomial of degree p in the neighb.
 %       estimate dydx(x0) as the derivative of the poynomial computed
 
-% check on arguments
+%% check on arguments
 narginchk(4, 4);
 
-% errors
+% error
 if ~isvector(x) || ~isvector(y)
 	error('diffpoly only works on vectors');
 end
-if length(x) ~= length(y)
-	error('x and y must have the same number of elements');
+if ~isscalar(w) || mod(w, 1) ~= 0 || mod(w, 2) ~= 1
+	error('w must be an odd integer');
 end
-if ~mod(w, 2)
-	error('Stencil width must be odd');
+if ~isscalar(p) || mod(p, 1) ~= 0
+	error('p must be a scalar integer');
 end
 
 % warnings
-if floor(w) ~= w
-	w = floor(w);
-	warning('Stencil width is not integer, rounded down to %d', w);
-end
 if floor(p) ~= p
 	p = floor(p);
 	warning('Polynomial degree is not integer, rounded down to %d', p);
@@ -111,7 +108,7 @@ for jj = 1:length(y)
 	if jj <= hw
 		% close to the left boundary
 		i1 = 1;
-		i2 = 2*hw + 1;
+		i2 = w;
 		if ~bLeftBoundComputed
 			dp = polyder(flip(transpose(V(i1:i2, :)\y(i1:i2))));
 			bLeftBoundComputed = true;
@@ -119,7 +116,7 @@ for jj = 1:length(y)
 	elseif jj >= Nx - hw
 		% close to the right boundary
 		i2 = Nx;
-		i1 = i2 - 2*hw + 1;
+		i1 = i2 - w;
 		if ~bRightBoundComputed
 			dp = polyder(flip(transpose(V(i1:i2, :)\y(i1:i2))));
 			bLeftBoundComputed = true;
