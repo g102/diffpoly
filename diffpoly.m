@@ -34,7 +34,7 @@ function dy = diffpoly(x, y, w, p)
 %       compute the best fitting polynomial of degree p in the neighb.
 %       estimate dydx(x0) as the derivative of the poynomial computed
 
-%% check on arguments
+%% check on inputs
 narginchk(4, 4);
 
 % errors
