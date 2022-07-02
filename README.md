@@ -31,3 +31,6 @@ At the boundaries of the domain, the stencil has always the same size but it is 
       compute the best fitting polynomial of degree p in the neighb.
       estimate dydx(x0) as the derivative of the poynomial computed
  ```
+
+## Usage
+Check file `usage.m` for proper usage and comparison with Matlab's `gradient` function.
